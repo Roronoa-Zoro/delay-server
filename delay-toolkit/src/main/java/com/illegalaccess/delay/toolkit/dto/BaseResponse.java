@@ -1,4 +1,8 @@
-package com.illegalaccess.delay.client.dto;
+package com.illegalaccess.delay.toolkit.dto;
+
+import com.illegalaccess.delay.toolkit.enums.BaseStatusEnum;
+import com.illegalaccess.delay.toolkit.enums.DelayStatusEnums;
+import com.illegalaccess.delay.toolkit.json.JsonTool;
 
 import java.io.Serializable;
 
@@ -16,9 +20,6 @@ public class BaseResponse<T> implements Serializable {
     private String errorMsg;
 
     private T content;
-
-    public BaseResponse() {
-    }
 
     public String getErrorCode() {
         return this.errorCode;
@@ -44,42 +45,56 @@ public class BaseResponse<T> implements Serializable {
         this.content = content;
     }
 
-//    public boolean OK() {
-//        return CommonStatusEnum.SUCCESS.getStatus().equals(this.errorCode);
-//    }
-//
-//    public static final <E> BaseResponse<E> build(String errorCode, String errorMsg, E content) {
-//        BaseResponse<E> response = new BaseResponse();
-//        response.errorCode = errorCode;
-//        response.errorMsg = errorMsg;
-//        response.content = content;
-//        return response;
-//    }
-//
-//    public static final <E> BaseResponse<E> build(BaseStatusEnum status, E content) {
-//        BaseResponse<E> response = new BaseResponse();
-//        response.errorCode = status.getStatus();
-//        response.errorMsg = status.getMessage();
-//        response.content = content;
-//        return response;
-//    }
-//
-//    public static final <E> BaseResponse<E> fail(String errorCode, String errorMsg) {
-//        return build(errorCode, errorMsg, (Object)null);
-//    }
-//
-//    public static final <E> BaseResponse<E> fail(String errorCode, String errorMsg, E content) {
-//        return build(errorCode, errorMsg, content);
-//    }
-//
-//    public static final <E> BaseResponse<E> fail(BaseStatusEnum status) {
-//        return build(status, (Object)null);
-//    }
-//
-//    public static final <E> BaseResponse<E> fail(BaseStatusEnum status, E content) {
-//        return build(status, content);
-//    }
-//
+    public boolean OK() {
+        return DelayStatusEnums.SUCCESS.getStatus().equals(this.errorCode);
+    }
+
+
+    public BaseResponse() {
+    }
+
+    public BaseResponse(String errorCode, String errorMsg, T content) {
+        this.errorCode = errorCode;
+        this.errorMsg = errorMsg;
+        this.content = content;
+    }
+
+    public static final <T> BaseResponse<T> build(String errorCode, String errorMsg, T content) {
+        BaseResponse<T> response = new BaseResponse();
+        response.errorCode = errorCode;
+        response.errorMsg = errorMsg;
+        response.content = content;
+        return response;
+    }
+
+    public static final <T> BaseResponse<T> build(BaseStatusEnum status, T content) {
+        BaseResponse<T> response = new BaseResponse();
+        response.errorCode = status.getStatus();
+        response.errorMsg = status.getMessage();
+        response.content = content;
+        return response;
+    }
+
+    public static final <T> BaseResponse<T> fail(String errorCode, String errorMsg) {
+        return (BaseResponse<T>) build(errorCode, errorMsg, (Object)null);
+    }
+
+    public static final <T> BaseResponse<T> fail(String errorCode, String errorMsg, T content) {
+        return build(errorCode, errorMsg, content);
+    }
+
+    public static final <T> BaseResponse<T> fail(BaseStatusEnum status) {
+        return (BaseResponse<T>) build(status, (Object)null);
+    }
+
+    public static final <T> BaseResponse<T> success(T content) {
+        return build(DelayStatusEnums.SUCCESS.getStatus(), DelayStatusEnums.SUCCESS.getMessage(), content);
+    }
+
+    public static final <T> BaseResponse<T> fail(BaseStatusEnum status, T content) {
+        return build(status, content);
+    }
+
 //    public static final <E> BaseResponse<E> success(E content) {
 //        return build(CommonStatusEnum.SUCCESS, content);
 //    }
@@ -89,6 +104,6 @@ public class BaseResponse<T> implements Serializable {
 //    }
 
     public String toJsonString() {
-        return JsonTool
+        return JsonTool.toJsonString(this);
     }
 }

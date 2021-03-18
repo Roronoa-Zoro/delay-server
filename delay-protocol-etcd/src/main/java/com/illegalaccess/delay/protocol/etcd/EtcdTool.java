@@ -1,0 +1,283 @@
+package com.illegalaccess.delay.protocol.etcd;
+
+import com.illegalaccess.delay.common.event.DelayEventPublisher;
+import com.illegalaccess.delay.protocol.ProtocolProperties;
+import com.illegalaccess.delay.protocol.constant.ProtocolConstant;
+import com.illegalaccess.delay.protocol.enums.ResourceChangeTypeEnum;
+import com.illegalaccess.delay.protocol.event.ResourceChangeEvent;
+import com.illegalaccess.delay.toolkit.IPUtils;
+import com.illegalaccess.delay.toolkit.TimeUtils;
+import com.illegalaccess.delay.toolkit.dto.Pairs;
+import com.illegalaccess.delay.toolkit.function.ThrowingSupplier;
+import com.illegalaccess.delay.toolkit.json.JsonTool;
+import io.etcd.jetcd.ByteSequence;
+import io.etcd.jetcd.Client;
+import io.etcd.jetcd.KeyValue;
+import io.etcd.jetcd.kv.GetResponse;
+import io.etcd.jetcd.kv.PutResponse;
+import io.etcd.jetcd.lease.LeaseGrantResponse;
+import io.etcd.jetcd.lease.LeaseKeepAliveResponse;
+import io.etcd.jetcd.options.GetOption;
+import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.options.WatchOption;
+import io.etcd.jetcd.watch.WatchEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 聚合操作etcd的接口
+ * @author Jimmy Li
+ * @date 2021-01-28 21:15
+ */
+@Component
+public class EtcdTool {
+
+    private final Logger logger = LoggerFactory.getLogger(EtcdTool.class);
+
+    @Autowired
+    private Client client;
+    @Autowired
+    private ProtocolProperties protocolProperties;
+    @Autowired
+    private DelayEventPublisher delayEventPublisher;
+
+    /**
+     * 注册本机IP，创建租约
+     *
+     * @return
+     */
+    public boolean register() {
+        String hostIp = IPUtils.getHostIp();
+
+        String serverNode = ProtocolConstant.buildRegisterNode(hostIp);
+
+        GetResponse getResp = getQuietly(() -> client.getKVClient().get(toByteSequence(serverNode)).get());
+        if (getResp.getCount() > 0) {
+            logger.info("hostIp:{} is registered", serverNode);
+            return true;
+        }
+
+        /**
+         * todo
+         * 这里需要保存lease id到redis，当服务异常挂掉，被操作系统再次拉起后，如果时间很短，则可以保存lease id不变，不必重新触发 rebalance
+         *
+         */
+        Long leaseId = EtcdLeaseTool.getLeaseExpireTime(protocolProperties.getLeasePath());
+        long ttl = renew(leaseId);
+        if (ttl > 0) {
+            EtcdResourceInfo.updateLease(leaseId);
+            return true;
+        }
+
+        LeaseGrantResponse grantResponse = getQuietly(() -> client.getLeaseClient().grant(protocolProperties.getTtl(), protocolProperties.getTimeout(), TimeUnit.SECONDS).get());
+        logger.info("will lease id:{}", grantResponse.getID());
+        EtcdResourceInfo.updateLease(grantResponse.getID());
+        CompletableFuture<PutResponse> putFuture = client.getKVClient().put(toByteSequence(serverNode),
+                toByteSequence(hostIp),
+                PutOption.newBuilder().withLeaseId(grantResponse.getID()).build()
+        );
+
+        PutResponse putResponse = getQuietly(() -> putFuture.get());
+        logger.info("put current machine:{} successfully", serverNode);
+        EtcdResourceInfo.registerSelfInfo();
+        return true;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean unregister() {
+        logger.info("will del from server list and assigned slot path for:{}", EtcdResourceInfo.getLeaseId());
+        client.getLeaseClient().revoke(EtcdResourceInfo.getLeaseId());
+        return true;
+    }
+
+    /**
+     * 监听槽节点 和 机器列表节点
+     *
+     * @return
+     */
+    public boolean monitor() {
+        client.getWatchClient().watch(
+                ByteSequence.from(ProtocolConstant.ALL_SLOT_PATH, Charset.forName("utf-8")),
+//                WatchOption.newBuilder().withPrefix(ByteSequence.from(ProtocolConstant.ALL_SLOT_PATH, Charset.forName("utf-8"))).build(),
+                (watchResponse -> {
+                    logger.info("slot list is changed{}", JsonTool.toJsonString(watchResponse));
+                    List<WatchEvent> watchEventList = watchResponse.getEvents();
+                    WatchEvent watchEvent = watchEventList.get(0);
+                    delayEventPublisher.publishEventWithDelay(new ResourceChangeEvent(ResourceChangeTypeEnum.Slot_Change, ResourceChangeTypeEnum.Slot_Change), TimeUtils.addTimeStamp(protocolProperties.getRebalanceDelay(), TimeUnit.MILLISECONDS));
+
+//                    delayEventPublisher.publishEvent(new ResourceChangeEvent(ResourceChangeTypeEnum.Slot_Change, ResourceChangeTypeEnum.Slot_Change));
+                })
+        );
+
+        client.getWatchClient().watch(
+                ByteSequence.from(ProtocolConstant.REGISTER_SERVER_PATH, Charset.forName("utf-8")),
+                WatchOption.newBuilder().withNoPut(false).withNoDelete(false).withPrefix(ByteSequence.from(ProtocolConstant.REGISTER_SERVER_PATH, Charset.forName("utf-8"))).build(),
+                (watchResponse -> {
+                    logger.info("server list is changed{}", JsonTool.toJsonString(watchResponse));
+                    delayEventPublisher.publishEventWithDelay(new ResourceChangeEvent(ResourceChangeTypeEnum.Server_List_Change, ResourceChangeTypeEnum.Server_List_Change), TimeUtils.addTimeStamp(protocolProperties.getRebalanceDelay(), TimeUnit.MILLISECONDS));
+
+//                    delayEventPublisher.publishEvent(new ResourceChangeEvent(ResourceChangeTypeEnum.Server_List_Change, ResourceChangeTypeEnum.Server_List_Change));
+                })
+        );
+
+//        client.getWatchClient().watch(
+//                ByteSequence.from(ProtocolConstant.ASSIGNED_SLOT_PATH, Charset.forName("utf-8")),
+//                WatchOption.newBuilder().withPrefix(ByteSequence.from(ProtocolConstant.ASSIGNED_SLOT_PATH, Charset.forName("utf-8"))).build(),
+//                (watchResponse -> {
+//                    // todo 更新resource info 记录
+//                })
+//        );
+
+
+        return true;
+    }
+
+    /**
+     *
+     * @param leaseId
+     * @return ttl
+     */
+    public long renew(Long leaseId) {
+        CompletableFuture<LeaseKeepAliveResponse> renew = client.getLeaseClient().keepAliveOnce(leaseId);
+        LeaseKeepAliveResponse response = getQuietly(() -> renew.get());
+        EtcdLeaseTool.writeLeaseInfo(protocolProperties.getLeasePath(), leaseId);
+        return response.getTTL();
+    }
+
+    /**
+     * put value method
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean putValue(String key, String value) {
+        PutResponse putResponse = asyncPutValue(key, value, null);
+        logger.info("put resp:{}", JsonTool.toJsonString(putResponse));
+        return true;
+    }
+
+    /**
+     * put value with lease
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean putValueWithLease(String key, String value) {
+        PutResponse putResponse = asyncPutValue(key, value, PutOption.newBuilder().withLeaseId(EtcdResourceInfo.getLeaseId()).build());
+        logger.info("put resp:{}", JsonTool.toJsonString(putResponse));
+        return true;
+    }
+
+    /**
+     * async put value
+     * @param key
+     * @param value
+     * @param putOption
+     * @return
+     */
+    private PutResponse asyncPutValue(String key, String value, PutOption putOption) {
+        if (putOption == null) {
+            CompletableFuture<PutResponse> putFuture = client.getKVClient().put(toByteSequence(key), toByteSequence(value));
+            return getQuietly(() -> putFuture.get());
+        }
+
+        CompletableFuture<PutResponse> putFuture = client.getKVClient().put(toByteSequence(key), toByteSequence(value), putOption);
+        return getQuietly(() -> putFuture.get());
+    }
+
+    /**
+     * get key and value for a specific key
+     *
+     * @param key
+     * @return
+     */
+    public Pairs getKeyValue(String key) {
+        logger.info("get value for key:{}", key);
+        ByteSequence keyByte = toByteSequence(key);
+        GetResponse getResp = getQuietly(() -> client.getKVClient().get(keyByte).get());
+
+        List<KeyValue> keyValues = getResp.getKvs();
+        if (CollectionUtils.isEmpty(keyValues)) {
+            return null;
+        }
+
+        KeyValue keyValue = keyValues.get(0);
+        Pairs paris = new Pairs();
+        paris.setKey(keyValue.getKey().toString(Charset.forName("utf-8")));
+        paris.setValue(keyValue.getValue().toString(Charset.forName("utf-8")));
+        return paris;
+    }
+
+    /**
+     * get key and value list for key prefix
+     *
+     * @param key
+     * @return
+     */
+    public List<Pairs> getKeyWithPrefix(String key) {
+        logger.info("get all sub for key:{}", key);
+        ByteSequence keyByte = toByteSequence(key);
+        GetResponse getResp = getQuietly(() -> client.getKVClient().get(keyByte, GetOption.newBuilder().withPrefix(keyByte).build()).get());
+
+        List<KeyValue> keyValues = getResp.getKvs();
+        if (CollectionUtils.isEmpty(keyValues)) {
+            return new ArrayList<>(0);
+        }
+
+        List<Pairs> parisList = new ArrayList<>();
+        for (KeyValue keyValue : keyValues) {
+            Pairs paris = new Pairs();
+            paris.setKey(keyValue.getKey().toString(Charset.forName("utf-8")));
+            paris.setValue(keyValue.getValue().toString(Charset.forName("utf-8")));
+            parisList.add(paris);
+        }
+        return parisList;
+    }
+
+    /**
+     * 统一处理异常的supplier
+     *
+     * @param supplier
+     * @param <T>
+     * @return
+     */
+    private <T> T getQuietly(ThrowingSupplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * convert byte to string
+     * @param byteSequence
+     * @return
+     */
+    public String byte2String(ByteSequence byteSequence) {
+        return byteSequence.toString(Charset.forName("utf-8"));
+    }
+
+    /**
+     * 转换成ByteSequence
+     *
+     * @param value
+     * @return
+     */
+    private ByteSequence toByteSequence(String value) {
+        return ByteSequence.from(value, Charset.forName("utf-8"));
+    }
+
+}

@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 
 /**
  * 服务器内存里面的，消息数量的快照信息
+ * @author Jimmy Li
+ * @since 2021-02-03
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class DelayMessageMemorySnapshot implements Serializable {
+public class DelayMessageSnapshot implements Serializable {
 
     /**
      * pk

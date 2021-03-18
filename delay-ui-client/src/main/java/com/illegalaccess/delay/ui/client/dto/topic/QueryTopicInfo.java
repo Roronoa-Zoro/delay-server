@@ -1,15 +1,21 @@
-package com.illegalaccess.delay.ui.client.dto;
+package com.illegalaccess.delay.ui.client.dto.topic;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class QueryTopicInfo implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
+    private Long id;
     /**
      * 接入方appkey
      */
@@ -40,5 +46,5 @@ public class QueryTopicInfo implements Serializable {
      */
     private String creatorOrg;
 
-    private LocalDateTime createTime;
+//    private LocalDateTime createTime;
 }

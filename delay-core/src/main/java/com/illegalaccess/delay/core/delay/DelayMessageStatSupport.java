@@ -1,17 +1,20 @@
 package com.illegalaccess.delay.core.delay;
 
-import org.springframework.data.util.Pair;
+
+import com.illegalaccess.delay.toolkit.dto.Pair;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DelayMessageStatContainer {
+/**
+ * 延时消息统计信息相关
+ * @author Jimmy Li
+ * @date 2021-03-04 10:36
+ */
+public class DelayMessageStatSupport {
 
     /**
      * 处理的消息总量
@@ -84,9 +87,10 @@ public class DelayMessageStatContainer {
      * @return
      */
     public static final List<Pair<Integer, LocalDateTime>> dumpMemorySnapshot() {
-        // todo
-        return null;
+        List<Pair<Integer, LocalDateTime>> data = new ArrayList<>(memorySnapshot.size());
+        while (memorySnapshot.peekFirst() != null) {
+            data.add(memorySnapshot.pollFirst());
+        }
+        return data;
     }
-
-
 }
