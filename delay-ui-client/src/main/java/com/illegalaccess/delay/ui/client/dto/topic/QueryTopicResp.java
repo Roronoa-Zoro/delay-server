@@ -1,4 +1,4 @@
-package com.illegalaccess.delay.ui.client.dto;
+package com.illegalaccess.delay.ui.client.dto.topic;
 
 import com.illegalaccess.delay.toolkit.dto.PageResponse;
 import lombok.*;

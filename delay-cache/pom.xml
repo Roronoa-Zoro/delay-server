@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.illegalaccess.delay</groupId>
+        <artifactId>delay-server</artifactId>
+        <version>1.0.0-snapshot</version>
+    </parent>
+
+
+    <groupId>com.illegalaccess.delay</groupId>
+    <artifactId>delay-cache</artifactId>
+    <version>1.0.0-snapshot</version>
+
+    <name>delay-cache</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.illegalaccess.delay</groupId>
+            <artifactId>delay-toolkit</artifactId>
+            <version>1.0.0-snapshot</version>
+        </dependency>
+    </dependencies>
+
+</project>

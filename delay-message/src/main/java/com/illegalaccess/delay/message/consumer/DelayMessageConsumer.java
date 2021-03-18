@@ -1,4 +1,9 @@
 package com.illegalaccess.delay.message.consumer;
 
-public class DelayMessageConsumerProcessor {
+/**
+ * 消息消费处理器
+ */
+public interface DelayMessageConsumer {
+
+    boolean processMessage(String msg);
 }

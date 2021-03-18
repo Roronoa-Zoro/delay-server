@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.illegalaccess.delay</groupId>
+        <artifactId>delay-server</artifactId>
+        <version>1.0.0-snapshot</version>
+    </parent>
+
+    <groupId>com.illegalaccess.delay</groupId>
+    <artifactId>delay-bootstrap</artifactId>
+    <version>1.0.0-snapshot</version>
+
+    <name>delay-bootstrap</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.illegalaccess.delay</groupId>
+            <artifactId>delay-protocol-etcd</artifactId>
+            <version>1.0.0-snapshot</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.illegalaccess.delay</groupId>
+            <artifactId>delay-client</artifactId>
+            <version>1.0.0-snapshot</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.illegalaccess.delay</groupId>
+            <artifactId>delay-toolkit</artifactId>
+            <version>1.0.0-snapshot</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.illegalaccess.delay</groupId>
+            <artifactId>delay-common</artifactId>
+            <version>1.0.0-snapshot</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+
+        <profile>
+            <id>dev-mysql-dubbo</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <profileActive>dev-mysql-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-registry-zookeeper</artifactId>
+                </dependency>
+
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>test-mysql-dubbo</id>
+            <properties>
+                <profileActive>test-mysql-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>pre-mysql-dubbo</id>
+            <properties>
+                <profileActive>pre-mysql-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>prod-mysql-dubbo</id>
+            <properties>
+                <profileActive>prod-mysql-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>dev-mysql-http</id>
+
+            <properties>
+                <profileActive>dev-mysql-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>test-mysql-http</id>
+            <properties>
+                <profileActive>test-mysql-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>pre-mysql-http</id>
+            <properties>
+                <profileActive>pre-mysql-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>prod-mysql-http</id>
+            <properties>
+                <profileActive>prod-mysql-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-mysql</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+
+
+        <profile>
+            <id>dev-cassandra-dubbo</id>
+            <properties>
+                <profileActive>dev-cassandra-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>test-cassandra-dubbo</id>
+            <properties>
+                <profileActive>test-cassandra-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>pre-cassandra-dubbo</id>
+            <properties>
+                <profileActive>pre-cassandra-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>prod-cassandra-dubbo</id>
+            <properties>
+                <profileActive>prod-cassandra-dubbo</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+
+        <profile>
+            <id>dev-cassandra-http</id>
+            <properties>
+                <profileActive>dev-cassandra-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>test-cassandra-http</id>
+            <properties>
+                <profileActive>test-cassandra-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>pre-cassandra-http</id>
+            <properties>
+                <profileActive>pre-cassandra-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>prod-cassandra-http</id>
+            <properties>
+                <profileActive>prod-cassandra-http</profileActive>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-exporter</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-message-kafka</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-cache-redis</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.illegalaccess.delay</groupId>
+                    <artifactId>delay-store-cassandra</artifactId>
+                    <version>1.0.0-snapshot</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-rpc-rest</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+
+        <profile>
+            <id>dev-customer</id>
+            <properties>
+                <profileActive>dev-customer</profileActive>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test-customer</id>
+            <properties>
+                <profileActive>test-customer</profileActive>
+            </properties>
+        </profile>
+
+
+        <profile>
+            <id>pre-customer</id>
+            <properties>
+                <profileActive>pre-customer</profileActive>
+            </properties>
+        </profile>
+
+
+        <profile>
+            <id>prod-customer</id>
+            <properties>
+                <profileActive>prod-customer</profileActive>
+            </properties>
+        </profile>
+
+
+    </profiles>
+
+</project>

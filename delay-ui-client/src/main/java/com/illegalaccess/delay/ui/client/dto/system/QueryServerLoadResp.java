@@ -1,4 +1,6 @@
 package com.illegalaccess.delay.ui.client.dto.system;
 
-public class QueryServerLoadResp {
+import java.io.Serializable;
+
+public class QueryServerLoadResp implements Serializable {
 }

@@ -3,14 +3,15 @@ package com.illegalaccess.delay.store.dto;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * app topic 信息
+ * @author Jimmy Li
  */
 @Data
-public class AppTopicDto implements Serializable {
+public class DelayMessageTopicDto implements Serializable {
 
+    private Long id;
     /**
      * 接入方appkey
      */
@@ -40,6 +41,4 @@ public class AppTopicDto implements Serializable {
      * 创建者所在组织机构
      */
     private String creatorOrg;
-
-    private LocalDateTime createTime;
 }

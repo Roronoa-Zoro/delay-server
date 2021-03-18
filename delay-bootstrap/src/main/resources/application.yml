@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: @profileActive@
+
+delay:
+  protocol:
+    endpoints: http://localhost:2379
+    timeout: 3
+    leasePath: /Users/jimmy/working/tmp/lease.txt
+    ttl: 15
+  core:
+    withinMin: 5
+  store:
+    archiveScheduler: 0 0 0/3 * * ?
+  message:
+    carryMsgId: false
+logging:
+  level:
+    root: info
+

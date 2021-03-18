@@ -1,7 +1,7 @@
 package com.illegalaccess.delay.store.mysql.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.illegalaccess.delay.store.entity.DelayMessageMemorySnapshot;
+import com.illegalaccess.delay.store.entity.DelayMessageSnapshot;
 
 /**
  * <p>
@@ -11,5 +11,5 @@ import com.illegalaccess.delay.store.entity.DelayMessageMemorySnapshot;
  * @author Jimmy Li
  * @since 2021-02-03
  */
-public interface DelayMessageMemorySnapshotMapper extends BaseMapper<DelayMessageMemorySnapshot> {
+public interface DelayMessageSnapshotMapper extends BaseMapper<DelayMessageSnapshot> {
 }
