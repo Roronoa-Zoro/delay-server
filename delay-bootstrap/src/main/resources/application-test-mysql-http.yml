@@ -1,0 +1,39 @@
+
+
+spring:
+  datasource:
+#    driverClassName: org.mariadb.jdbc.Driver
+    driverClassName: com.mysql.jdbc.Driver
+    filters: stat,wall,slf4j
+    initialSize: 2
+    maxActive: 50
+    maxPoolPreparedStatementPerConnectionSize: 20
+    maxWait: 5000
+    minEvictableIdleTimeMillis: 30000
+    minIdle: 10
+    password: root
+    poolPreparedStatements: true
+    testOnBorrow: false
+    testOnReturn: false
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 60000
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/delay-server?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useAffectedRows=true
+    username: root
+    validationQuery: SELECT 1 FROM DUAL
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+
+dubbo:
+  protocol:
+    name: rest
+    port: 8881
+    server: tomcat
+  application:
+    name: delay-bootstrap
+  scan:
+    base-packages: com.illegalaccess.delay.exporter.rpc
+  registry:
+    register: false
+    address: N/A

@@ -1,0 +1,4 @@
+dubbo:
+  protocol:
+    name: http
+    port: 8881
