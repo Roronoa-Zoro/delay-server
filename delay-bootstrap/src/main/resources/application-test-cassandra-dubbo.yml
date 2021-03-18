@@ -1,0 +1,43 @@
+
+
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      client-id: delay-bootstrap-demo
+      retries: 1
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  data:
+    cassandra:
+      contact-points: localhost
+      keyspace-name: delay_server2
+      port: 9042
+      local-datacenter: datacenter1
+
+delay:
+  cassandra:
+    endpoint: 127.0.0.1:9042
+    keyspace: delay_server2
+
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20880
+  application:
+    name: delay-bootstrap
+  scan:
+    base-packages: com.illegalaccess.delay.exporter.rpc
+  registry:
+    register: false
+    address: N/A
+
+
+
+
+

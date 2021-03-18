@@ -1,0 +1,82 @@
+spring:
+  datasource:
+#    driverClassName: org.mariadb.jdbc.Driver
+    driverClassName: com.mysql.jdbc.Driver
+    filters: stat,wall,slf4j
+    initialSize: 2
+    maxActive: 50
+    maxPoolPreparedStatementPerConnectionSize: 20
+    maxWait: 5000
+    minEvictableIdleTimeMillis: 30000
+    minIdle: 10
+    password: root
+    poolPreparedStatements: true
+    testOnBorrow: false
+    testOnReturn: false
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 60000
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/delay-server?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useAffectedRows=true
+    username: root
+    validationQuery: SELECT 1 FROM DUAL
+  kafka:
+    producer:
+#      bootstrap-servers: 127.0.0.1:9092
+#      bootstrap-servers: 11.50.75.31:50088
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      client-id: delay-bootstrap-demo
+#      client-id: kafkago
+      retries: 1
+      security:
+        protocol: SASL_PLAINTEXT
+      compression-type: lz4
+      properties:
+        sasl:
+          mechanism: PLAIN
+          jaas:
+            config: org.apache.kafka.common.security.plain.PlainLoginModule required username=kafkago password=dad97b2e600849cea00ddf60c819aa15;
+    consumer:
+#      client-id: kafkago
+      group-id: kafkago
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+#      security:
+#        protocol: SASL_PLAINTEXT
+#      properties:
+#        sasl:
+#          mechanism: PLAIN
+#          jaas:
+#            config: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafkago" password="dad97b2e600849cea00ddf60c819aa15";
+    listener:
+      ack-mode: manual
+    client-id: kafkago
+    bootstrap-servers: test-nameserver.jmq.jd.local:50088
+
+
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20880
+  application:
+    name: delay-bootstrap
+  scan:
+    base-packages: com.illegalaccess.delay.exporter.rpc
+  registry:
+    register: false
+    address: N/A
+
+
+
+
