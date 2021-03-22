@@ -20,7 +20,7 @@ public class DelayBootstrap {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(DelayBootstrap.class)
-                .web(WebApplicationType.NONE)
+//                .web(WebApplicationType.NONE)
                 .build()
                 .run(args);
         log.info("DelayBootstrap is running");

@@ -1,6 +1,6 @@
 package com.illegalaccess.delay.protocol.constant;
 
-import com.illegalaccess.delay.protocol.ResourceInfo;
+import com.illegalaccess.delay.protocol.support.ResourceInfo;
 
 import java.util.StringJoiner;
 

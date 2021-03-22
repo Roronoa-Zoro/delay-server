@@ -22,11 +22,19 @@ public class DelayMessageEvent implements Delayed {
 
     @Override
     public long getDelay(TimeUnit unit) {
-        return 0;
+        return delayMs - System.currentTimeMillis();
     }
 
     @Override
     public int compareTo(Delayed o) {
-        return 0;
+
+        long diff = getDelay(TimeUnit.MILLISECONDS) - o.getDelay(TimeUnit.MILLISECONDS);
+        if (diff > 0) {
+            return 1;
+        } else if (diff < 0) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }

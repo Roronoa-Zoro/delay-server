@@ -1,5 +1,7 @@
 package com.illegalaccess.delay.client.dto;
 
+import lombok.Builder;
+
 import java.io.Serializable;
 
 /**
@@ -7,19 +9,14 @@ import java.io.Serializable;
  * @author Jimmy Li
  * @date 2021-03-04 10:14
  */
+@Builder
 public class CancelMessageResp implements Serializable {
 
     private static final long serialVersionUID = 904968298751766342L;
     private String messageId;
 
-    private String errorCode;
-
-    private String errorMsg;
-
-    public CancelMessageResp(String messageId, String errorCode, String errorMsg) {
+    public CancelMessageResp(String messageId) {
         this.messageId = messageId;
-        this.errorCode = errorCode;
-        this.errorMsg = errorMsg;
     }
 
     public String getMessageId() {
@@ -30,28 +27,10 @@ public class CancelMessageResp implements Serializable {
         this.messageId = messageId;
     }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorMsg() {
-        return errorMsg;
-    }
-
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
     @Override
     public String toString() {
-        return "DelayMessageResp{" +
+        return "CancelMessageResp{" +
                 "messageId='" + messageId + '\'' +
-                ", errorCode='" + errorCode + '\'' +
-                ", errorMsg='" + errorMsg + '\'' +
                 '}';
     }
 }

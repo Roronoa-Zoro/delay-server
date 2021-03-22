@@ -98,7 +98,16 @@ public interface StoreApi {
      */
     DelayMessageAppDto getAppMeta(String appKey);
 
-
+    /**
+     * 查询消息所属的槽
+     * @param messageId
+     * @param appKey
+     * @param topic
+     * @return
+     */
+    default Integer queryMessageSlot(String messageId, String appKey, String topic) {
+        return 1;
+    }
 
     /**======================================== api for admin ========================================**/
     /**

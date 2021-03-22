@@ -7,6 +7,7 @@ import com.illegalaccess.delay.core.scheduler.LoadDelayMessageThreadPoolTask;
 import com.illegalaccess.delay.core.scheduler.LoopDelayMessageThreadPoolTask;
 import com.illegalaccess.delay.message.DelayMqApi;
 import com.illegalaccess.delay.protocol.ResourceProtocol;
+import com.illegalaccess.delay.protocol.callback.ResourceChangeCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -49,7 +50,7 @@ public class ApplicationStartedEventListener implements ApplicationListener<Appl
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent applicationStartedEvent) {
-        resourceProtocol.monitorRegisterStatus();
+        resourceProtocol.monitorResource(new ResourceChangeCallback());
         log.info("protocol is monitored");
 
         resourceProtocol.register();

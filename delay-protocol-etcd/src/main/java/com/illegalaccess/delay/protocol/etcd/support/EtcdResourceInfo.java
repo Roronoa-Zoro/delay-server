@@ -1,6 +1,6 @@
-package com.illegalaccess.delay.protocol.etcd;
+package com.illegalaccess.delay.protocol.etcd.support;
 
-import com.illegalaccess.delay.protocol.ResourceInfo;
+import com.illegalaccess.delay.protocol.support.ResourceInfo;
 
 /**
  *

@@ -1,5 +1,6 @@
 package com.illegalaccess.delay.protocol;
 
+import com.illegalaccess.delay.protocol.callback.MonitorCallback;
 import com.illegalaccess.delay.protocol.enums.RegisterStatusEnum;
 
 /**
@@ -10,7 +11,8 @@ import com.illegalaccess.delay.protocol.enums.RegisterStatusEnum;
 public interface ResourceProtocol {
 
     /**
-     * 注册
+     * 注册 本机的ip和端口号，冒号分隔
+     * 并且节点发生变化时可以感知到
      *
      * @return
      */
@@ -25,8 +27,11 @@ public interface ResourceProtocol {
 
     /**
      * 监控注册列表
+     * 监控server list和槽的数量变更
+     * 资源发生变更时，调用callback方法
+     *
      */
-    void monitorRegisterStatus();
+    void monitorResource(MonitorCallback monitorCallback);
 
     /**
      * 数据重平衡

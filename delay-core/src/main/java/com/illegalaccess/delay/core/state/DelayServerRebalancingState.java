@@ -18,7 +18,7 @@ public class DelayServerRebalancingState extends AbstractDelayServerState {
     private DelayServerBusiness delayServerBusiness;
 
     @Override
-    public String service(DelayMessageReq req) {
+    public String acceptMessage(DelayMessageReq req) {
         // 接收数据，直接入存储层
         String messageId = delayServerBusiness.storeDelayMessage(req);
         return messageId;

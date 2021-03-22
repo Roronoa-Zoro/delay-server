@@ -1,5 +1,8 @@
 package com.illegalaccess.delay.protocol.event;
 
+import com.illegalaccess.delay.protocol.ResourceProtocol;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * 1.update working state, switch to re-balance state
  * 2.process complete current data
@@ -12,6 +15,9 @@ package com.illegalaccess.delay.protocol.event;
  */
 public abstract class ResourceChangeEventHandler {
 
+    @Autowired
+    private ResourceProtocol resourceProtocol;
+
     /**
      * logic to run before handling resource change event
      */
@@ -20,7 +26,9 @@ public abstract class ResourceChangeEventHandler {
     /**
      * logic for resource change event
      */
-    protected abstract void handle();
+    protected void handle() {
+        resourceProtocol.rebalance();
+    }
 
     /**
      * logic to run after handling resource change event

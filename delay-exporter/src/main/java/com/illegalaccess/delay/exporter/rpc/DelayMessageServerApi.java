@@ -6,6 +6,8 @@ import com.illegalaccess.delay.client.dto.CancelMessageResp;
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.client.dto.DelayMessageResp;
 import com.illegalaccess.delay.core.state.DelayServerContext;
+import com.illegalaccess.delay.toolkit.dto.BaseResponse;
+import com.illegalaccess.delay.toolkit.enums.DelayBusinessEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +38,11 @@ public class DelayMessageServerApi implements DelayMessageApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public DelayMessageResp sendDelayMsg(DelayMessageReq req) {
-        String messageId = delayServerContext.doService(req);
+    public BaseResponse<DelayMessageResp> sendDelayMsg(DelayMessageReq req) {
+        String messageId = delayServerContext.acceptMessage(req);
         log.info("receive a delay message and associated a messageId:{}", messageId);
         DelayMessageResp resp = new DelayMessageResp(messageId);
-
-        return resp;
+        return BaseResponse.success(resp);
     }
 
     @POST
@@ -49,8 +50,12 @@ public class DelayMessageServerApi implements DelayMessageApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public CancelMessageResp cancelDelayMsg(CancelMessageReq req) {
+    public BaseResponse<CancelMessageResp> cancelDelayMsg(CancelMessageReq req) {
         // 取消已发送的延时消息
-        return null;
+        String msgId = delayServerContext.cancelMessage(req);
+        if (req.getMessageId().equals(msgId)) {
+            return BaseResponse.success(CancelMessageResp.builder().messageId(msgId).build());
+        }
+        return BaseResponse.fail(DelayBusinessEnum.Cancel_Msg_Fail);
     }
 }

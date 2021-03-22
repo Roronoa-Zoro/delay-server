@@ -2,7 +2,7 @@ package com.illegalaccess.delay.core.state;
 
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.core.business.DelayServerBusiness;
-import com.illegalaccess.delay.protocol.ResourceInfo;
+import com.illegalaccess.delay.protocol.support.ResourceInfo;
 import com.illegalaccess.delay.protocol.ResourceProtocol;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class DelayServerStartupState extends AbstractDelayServerState {
     private final AtomicBoolean getSlot = new AtomicBoolean(false);
 
     @Override
-    public String service(DelayMessageReq req) {
+    public String acceptMessage(DelayMessageReq req) {
         if (!getSlot.get()) {
             int[] slot = resourceProtocol.getAllSlot();
             ResourceInfo.assignSlot(slot);

@@ -21,7 +21,7 @@ public class DelayServerRunningState extends AbstractDelayServerState {
     private DelayServerBusiness delayServerBusiness;
 
     @Override
-    public String service(DelayMessageReq req) {
+    public String acceptMessage(DelayMessageReq req) {
         String messageId = delayServerBusiness.storeDelayMessage(req);
         log.info("message is saved");
 

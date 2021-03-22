@@ -51,6 +51,7 @@
         <resilience4j.version>1.6.1</resilience4j.version>
         <dubbo.version>2.7.8</dubbo.version>
         <druid.version>1.2.3</druid.version>
+        <guava.version>30.0-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -122,6 +123,12 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${druid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.0-jre</version>
             </dependency>
 
 

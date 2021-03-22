@@ -40,4 +40,14 @@ public class DelayCoreProperties {
      */
     private int innerTopicRepeatInterval = 6 * 60;
 
+    /**
+     * 内部节点互相访问的token
+     */
+    private String accessToken;
+
+    /**
+     * 内部节点互相访问时，从发起方到访问方，在这个的时间差内算合法，但是毫秒, 默认10秒
+     */
+    private Long effectiveAccessInterval = 10000L;
+
 }
