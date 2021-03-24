@@ -35,6 +35,7 @@ delay-message-kafka：kafka作为下游消息系统的实现
 2. 支持http协议对外提供服务    
 3. 底层存储支持mysql和Cassandra    
 4. 协议协调层目前支持了etcd    
+5. 支持任意时间点的延时消息   
 
 
 ### UI展示
