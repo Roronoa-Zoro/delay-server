@@ -1,6 +1,6 @@
 package com.illegalaccess.delay.protocol.rebalance;
 
-import com.illegalaccess.delay.protocol.HostInfo;
+import com.illegalaccess.delay.protocol.support.HostInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -24,16 +24,9 @@ import java.util.Map;
  */
 public class RangeSlotRebalance implements SlotRebalance {
 
-    /**
-     * Ro
-     *
-     * @param allSLot
-     * @param allServerIp
-     * @param currentIp
-     * @return
-     */
+
     @Override
-    public Map<Integer, HostInfo> rebalanceSlot(List<Integer> allSLot, List<String> allServerIp, String currentIp) {
+    public Map<HostInfo, List<Integer>> rebalanceSlot(List<Integer> allSLot, List<String> allServerIp, String currentIp) {
         return null;
     }
 }

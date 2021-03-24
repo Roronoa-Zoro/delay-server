@@ -39,6 +39,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.illegalaccess.delay</groupId>
+            <artifactId>delay-common</artifactId>
+            <version>1.0.0-snapshot</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>

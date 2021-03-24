@@ -1,19 +1,26 @@
 package com.illegalaccess.delay.core.business;
 
+import com.google.common.collect.Maps;
+import com.illegalaccess.delay.client.dto.CancelMessageReq;
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
+import com.illegalaccess.delay.core.DelayCoreProperties;
 import com.illegalaccess.delay.core.delay.DelayMessageContainer;
 import com.illegalaccess.delay.core.delay.DelayMessageObj;
 import com.illegalaccess.delay.core.delay.DelayMessageStatSupport;
 import com.illegalaccess.delay.core.delay.DelayMessageSupport;
 import com.illegalaccess.delay.core.transport.DelayCoreConverter;
-import com.illegalaccess.delay.protocol.ResourceInfo;
+import com.illegalaccess.delay.protocol.support.HostInfo;
+import com.illegalaccess.delay.protocol.support.ResourceInfo;
 import com.illegalaccess.delay.store.StoreApi;
 import com.illegalaccess.delay.toolkit.TimeUtils;
+import com.illegalaccess.delay.toolkit.http.HttpBuilder;
+import com.illegalaccess.delay.toolkit.http.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 延时消息业务操作
@@ -28,6 +35,8 @@ public class DelayServerBusiness {
     private StoreApi storeApi;
     @Autowired
     private DelayCoreConverter delayCoreConverter;
+    @Autowired
+    private DelayCoreProperties delayCoreProperties;
 
 
     /**
@@ -39,6 +48,41 @@ public class DelayServerBusiness {
         String messageId = storeApi.persistDelayMessage(req, ResourceInfo.getSlot());
         DelayMessageStatSupport.increaseTopicCnt(req.getAppKey(), req.getTopic());
         return messageId;
+    }
+
+    /**
+     * 取消消息
+     * @param req
+     * @return
+     */
+    public String cancelMessage(CancelMessageReq req) {
+
+        Integer slot = storeApi.queryMessageSlot(req.getMessageId(), req.getAppKey(), req.getTopic());
+        HostInfo hostInfo = ResourceInfo.getHostInfo(slot);
+        HostInfo self = ResourceInfo.getSelf();
+        if (self.getHostIp().equals(hostInfo.getHostIp())) {
+            log.info("current host can process cancel message:{}", req.getMessageId());
+            DelayMessageContainer.cancelMsg(req.getMessageId());
+            log.info("message is removed from cache");
+            boolean canceled = storeApi.cancelDelayMessage(req.getMessageId());
+            log.info("message is cancelled from store layer:{}", canceled);
+            return canceled ? req.getMessageId() : "";
+        }
+
+        String httpUrl = HttpBuilder.buildHttpUrl(hostInfo.getHostIp(), hostInfo.getPort(), BusinessConstant.Cancel_Message_Path);
+        Map<String, String> header = Maps.newHashMap();
+        header.put(BusinessConstant.Access_Time, TimeUtils.getTimeStamp() + "");
+        header.put(BusinessConstant.Access_Token, delayCoreProperties.getAccessToken());
+        log.info("invoke host:{} to cancel message", hostInfo.getHostIp());
+        String resp = HttpUtils.httpPost(httpUrl, req, header);
+        log.info("cancel message resp:{}", resp);
+        if (req.getMessageId().equals(resp)) {
+            log.info("host:{} cancel message:{} successfully", hostInfo.getHostIp(), req.getMessageId());
+            return req.getMessageId();
+        }
+
+        log.info("host:{} cancel message:{} fail", hostInfo.getHostIp(), req.getMessageId());
+        return "";
     }
 
     /**

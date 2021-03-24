@@ -5,7 +5,7 @@ import com.illegalaccess.delay.cache.DelayCacheKey;
 import com.illegalaccess.delay.cache.DelayCacheSupport;
 import com.illegalaccess.delay.common.bean.DelayBeanFactory;
 import com.illegalaccess.delay.core.delay.DelayMessageStatSupport;
-import com.illegalaccess.delay.protocol.ResourceInfo;
+import com.illegalaccess.delay.protocol.support.ResourceInfo;
 import com.illegalaccess.delay.store.StoreApi;
 import com.illegalaccess.delay.toolkit.dto.Pair;
 import com.illegalaccess.delay.toolkit.thread.AbstractLogRunnable;

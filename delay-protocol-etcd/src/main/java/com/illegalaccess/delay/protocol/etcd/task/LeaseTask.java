@@ -1,7 +1,7 @@
 package com.illegalaccess.delay.protocol.etcd.task;
 
-import com.illegalaccess.delay.protocol.etcd.EtcdResourceInfo;
-import com.illegalaccess.delay.protocol.etcd.EtcdTool;
+import com.illegalaccess.delay.protocol.etcd.support.EtcdResourceInfo;
+import com.illegalaccess.delay.protocol.etcd.support.EtcdTool;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

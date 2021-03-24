@@ -7,7 +7,7 @@ import com.illegalaccess.delay.core.delay.DelayMessageContainer;
 import com.illegalaccess.delay.core.delay.DelayMessageObj;
 import com.illegalaccess.delay.core.delay.DelayMessageSupport;
 import com.illegalaccess.delay.core.transport.DelayCoreConverter;
-import com.illegalaccess.delay.protocol.ResourceInfo;
+import com.illegalaccess.delay.protocol.support.ResourceInfo;
 import com.illegalaccess.delay.store.StoreApi;
 import com.illegalaccess.delay.store.dto.DelayMessageDto;
 import com.illegalaccess.delay.toolkit.TimeUtils;

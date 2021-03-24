@@ -1,6 +1,6 @@
 package com.illegalaccess.delay.protocol.etcd.auto;
 
-import com.illegalaccess.delay.protocol.ProtocolProperties;
+import com.illegalaccess.delay.protocol.support.ProtocolProperties;
 import com.illegalaccess.delay.protocol.etcd.EtcdResourceProtocol;
 import com.illegalaccess.delay.protocol.event.ResourceChangeListener;
 import com.illegalaccess.delay.toolkit.thread.DelayThreadFactory;
@@ -50,8 +50,5 @@ public class JEtcdAutoConfiguration {
         return scheduledExecutorFactoryBean;
     }
 
-    @Bean
-    public ResourceChangeListener resourceChangeListener() {
-        return new ResourceChangeListener();
-    }
+
 }

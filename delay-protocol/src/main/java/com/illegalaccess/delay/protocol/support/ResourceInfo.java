@@ -1,10 +1,14 @@
-package com.illegalaccess.delay.protocol;
+package com.illegalaccess.delay.protocol.support;
 
 import com.illegalaccess.delay.toolkit.IPUtils;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -30,14 +34,14 @@ public class ResourceInfo implements Serializable {
      * 所有槽的信息，下标从1开始，标识每个槽属于哪个host
      * 当删除发送的延时消息时，请求达到一台机器，如果消息没在当前机器上，则根据此信息，可以O(1)获取到应该处理该消息的机器，然后调用该机器的接口删除消息
      */
-    private static Map</* 槽 id */Integer, HostInfo> allSlotHostInfo;
+    private static volatile ConcurrentMap</* 槽 id */Integer, HostInfo> allSlotHostInfo = new ConcurrentHashMap<>(64);
 //    private HostInfo[] allSlotHostInfo;
 
-    public static final void registerSelfInfo() {
+    public static final void registerSelfInfo(int webPort) {
         String hostIp = IPUtils.getHostIp();
         self = new HostInfo();
         self.setHostIp(hostIp);
-        self.setPort(18080);
+        self.setPort(webPort);
     }
 
     public static final boolean assignSlot(int[] slot) {
@@ -55,8 +59,15 @@ public class ResourceInfo implements Serializable {
     }
 
 
-    public static final void registerAllSlot() {
-        // todo
+    public static final void registerAllSlot(Map<HostInfo, List<Integer>> allInfo) {
+        Map</* 槽 id */Integer, HostInfo> map = new HashMap<>();
+        allInfo.forEach((hostInfo, slotList) -> slotList.forEach(slot -> map.put(slot, hostInfo)));
+        allSlotHostInfo.clear();
+        allSlotHostInfo.putAll(map);
+    }
+
+    public static final HostInfo getHostInfo(Integer slot) {
+        return allSlotHostInfo.get(slot);
     }
 
     public static HostInfo getSelf() {

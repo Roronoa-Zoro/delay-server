@@ -66,6 +66,11 @@ public class MySQLStoreApi implements StoreApi {
     }
 
     @Override
+    public Integer queryMessageSlot(String messageId, String appKey, String topic) {
+        return mySQLStoreBusiness.queryMessageSlot(messageId, appKey, topic);
+    }
+
+    @Override
     public List<AppKeyMessageCntDto> queryMessageCount4AppKey(List<String> appKeyList) {
         return mySQLStoreBusiness.queryMessageCount4AppKey(appKeyList);
     }

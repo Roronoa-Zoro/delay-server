@@ -1,5 +1,6 @@
 package com.illegalaccess.delay.core.state;
 
+import com.illegalaccess.delay.client.dto.CancelMessageReq;
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.core.DelayCoreProperties;
 import com.illegalaccess.delay.store.StoreApi;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  状态切换过程
@@ -41,6 +43,10 @@ public class DelayServerContext {
     @Resource(name = "delayServerStartupState")
     AbstractDelayServerState startupState;
 
+    private final int rebalance_state = 1;
+    private final int non_rebalance_state = 0;
+    private final AtomicInteger state = new AtomicInteger(non_rebalance_state);
+
     @Autowired
     private StoreApi storeApi;
 
@@ -59,29 +65,47 @@ public class DelayServerContext {
         this.delayServerState = delayServerState;
     }
 
-    public String doService(DelayMessageReq req) {
+    public String acceptMessage(DelayMessageReq req) {
         req.setExecTime(req.getExecTime() - delayCoreProperties.getNetworkDelay());
         DelayMessageAppDto appMetaData = storeApi.getAppMeta(req.getAppKey());
         if (appMetaData == null) {
             throw new IllegalArgumentException("invalid appKey:" + req.getAppKey());
         }
 
-        return delayServerState.service(req);
+        return delayServerState.acceptMessage(req);
+    }
+
+    /**
+     * 取消延时消息
+     * @param req
+     * @return
+     */
+    public String cancelMessage(CancelMessageReq req) {
+        return delayServerState.cancelMessage(req);
     }
 
     /**
      * switch re-balance state
      */
     public void pause() {
-        logger.info("to re-balance state");
-        delayServerState.transform();
+        if (rebalance_state == state.get()) {
+            logger.info("already in rebalance state, can not transform");
+            return;
+        }
+
+        if (state.compareAndSet(non_rebalance_state, rebalance_state)) {
+            logger.info("to re-balance state");
+            delayServerState.transform();
+        }
     }
 
     /**
      * recover back to working state
      */
     public void run() {
-        logger.info("back to working state");
-        delayServerState.transform();
+        if (state.compareAndSet(rebalance_state, non_rebalance_state)) {
+            logger.info("back to working state");
+            delayServerState.transform();
+        }
     }
 }

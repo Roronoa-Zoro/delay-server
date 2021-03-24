@@ -7,10 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,24 +34,29 @@ public class DelayEventPublisher {
     private ApplicationEventPublisher applicationEventPublisher;
 
     private DelayQueue<DelayMessageEvent> delayQueue = new DelayQueue<>();
-    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1,
-            new DelayThreadFactory("delay-publisher-thread-"),
-            new ThreadPoolExecutor.CallerRunsPolicy());
+
+    @Resource(name = "scheduledDelayMessagePublisher")
+    private ThreadPoolTaskScheduler threadPoolTaskScheduler;
+
+//    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4,
+//            new DelayThreadFactory("delay-publisher-thread-"),
+//            new ThreadPoolExecutor.CallerRunsPolicy());
 
     @PostConstruct
     public void init() {
-        scheduledThreadPoolExecutor.scheduleAtFixedRate(
-                new DelayMessageEventPublishTask(delayQueue, applicationEventPublisher),
-                100L,
-                100L,
-                TimeUnit.MILLISECONDS
-        );
+//        scheduledThreadPoolExecutor.scheduleAtFixedRate(
+//                new DelayMessageEventPublishTask(delayQueue, applicationEventPublisher),
+//                100L,
+//                100L,
+//                TimeUnit.MILLISECONDS
+//        );
+        threadPoolTaskScheduler.scheduleAtFixedRate(new DelayMessageEventPublishTask(delayQueue, applicationEventPublisher), 200L);
     }
 
     @PreDestroy
     public void destroy() {
         logger.info("shutdown delay-publisher-thread");
-        scheduledThreadPoolExecutor.shutdown();
+//        scheduledThreadPoolExecutor.shutdown();
     }
     /**
      * 发布资源变更事件
@@ -81,6 +88,7 @@ public class DelayEventPublisher {
         @Override
         public void run() {
             DelayMessageEvent delayMessageEvent = delayQueue.poll();
+//            logger.info("thread:{} run..................", Thread.currentThread().getName());
             while (delayMessageEvent != null) {
                 logger.info("publish delay event:{}", delayMessageEvent);
                 applicationEventPublisher.publishEvent(delayMessageEvent.getApplicationEvent());

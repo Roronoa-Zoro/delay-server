@@ -1,12 +1,11 @@
-package com.illegalaccess.delay.protocol.etcd;
+package com.illegalaccess.delay.protocol.etcd.support;
 
-import com.illegalaccess.delay.common.event.DelayEventPublisher;
-import com.illegalaccess.delay.protocol.ProtocolProperties;
+import com.illegalaccess.delay.protocol.support.HostInfo;
+import com.illegalaccess.delay.protocol.support.ProtocolProperties;
+import com.illegalaccess.delay.protocol.callback.MonitorCallback;
 import com.illegalaccess.delay.protocol.constant.ProtocolConstant;
 import com.illegalaccess.delay.protocol.enums.ResourceChangeTypeEnum;
-import com.illegalaccess.delay.protocol.event.ResourceChangeEvent;
-import com.illegalaccess.delay.toolkit.IPUtils;
-import com.illegalaccess.delay.toolkit.TimeUtils;
+import com.illegalaccess.delay.toolkit.Constants;
 import com.illegalaccess.delay.toolkit.dto.Pairs;
 import com.illegalaccess.delay.toolkit.function.ThrowingSupplier;
 import com.illegalaccess.delay.toolkit.json.JsonTool;
@@ -47,22 +46,20 @@ public class EtcdTool {
     private Client client;
     @Autowired
     private ProtocolProperties protocolProperties;
-    @Autowired
-    private DelayEventPublisher delayEventPublisher;
 
     /**
      * 注册本机IP，创建租约
      *
      * @return
      */
-    public boolean register() {
-        String hostIp = IPUtils.getHostIp();
+    public boolean register(HostInfo hostInfo) {
+        String hostIp = hostInfo.getHostIp();
+        String hostValue = hostIp + Constants.colon + hostInfo.getPort();
+        String hostKey = ProtocolConstant.buildRegisterNode(hostIp);
 
-        String serverNode = ProtocolConstant.buildRegisterNode(hostIp);
-
-        GetResponse getResp = getQuietly(() -> client.getKVClient().get(toByteSequence(serverNode)).get());
+        GetResponse getResp = getQuietly(() -> client.getKVClient().get(toByteSequence(hostKey)).get());
         if (getResp.getCount() > 0) {
-            logger.info("hostIp:{} is registered", serverNode);
+            logger.info("hostIp:{} is registered", hostIp);
             return true;
         }
 
@@ -81,14 +78,13 @@ public class EtcdTool {
         LeaseGrantResponse grantResponse = getQuietly(() -> client.getLeaseClient().grant(protocolProperties.getTtl(), protocolProperties.getTimeout(), TimeUnit.SECONDS).get());
         logger.info("will lease id:{}", grantResponse.getID());
         EtcdResourceInfo.updateLease(grantResponse.getID());
-        CompletableFuture<PutResponse> putFuture = client.getKVClient().put(toByteSequence(serverNode),
-                toByteSequence(hostIp),
+        CompletableFuture<PutResponse> putFuture = client.getKVClient().put(toByteSequence(hostKey),
+                toByteSequence(hostValue),
                 PutOption.newBuilder().withLeaseId(grantResponse.getID()).build()
         );
 
         PutResponse putResponse = getQuietly(() -> putFuture.get());
-        logger.info("put current machine:{} successfully", serverNode);
-        EtcdResourceInfo.registerSelfInfo();
+        logger.info("put current machine:{} successfully", hostKey);
         return true;
     }
 
@@ -107,7 +103,7 @@ public class EtcdTool {
      *
      * @return
      */
-    public boolean monitor() {
+    public boolean monitor(MonitorCallback monitorCallback) {
         client.getWatchClient().watch(
                 ByteSequence.from(ProtocolConstant.ALL_SLOT_PATH, Charset.forName("utf-8")),
 //                WatchOption.newBuilder().withPrefix(ByteSequence.from(ProtocolConstant.ALL_SLOT_PATH, Charset.forName("utf-8"))).build(),
@@ -115,9 +111,7 @@ public class EtcdTool {
                     logger.info("slot list is changed{}", JsonTool.toJsonString(watchResponse));
                     List<WatchEvent> watchEventList = watchResponse.getEvents();
                     WatchEvent watchEvent = watchEventList.get(0);
-                    delayEventPublisher.publishEventWithDelay(new ResourceChangeEvent(ResourceChangeTypeEnum.Slot_Change, ResourceChangeTypeEnum.Slot_Change), TimeUtils.addTimeStamp(protocolProperties.getRebalanceDelay(), TimeUnit.MILLISECONDS));
-
-//                    delayEventPublisher.publishEvent(new ResourceChangeEvent(ResourceChangeTypeEnum.Slot_Change, ResourceChangeTypeEnum.Slot_Change));
+                    monitorCallback.callback(ResourceChangeTypeEnum.Slot_Change);
                 })
         );
 
@@ -126,21 +120,10 @@ public class EtcdTool {
                 WatchOption.newBuilder().withNoPut(false).withNoDelete(false).withPrefix(ByteSequence.from(ProtocolConstant.REGISTER_SERVER_PATH, Charset.forName("utf-8"))).build(),
                 (watchResponse -> {
                     logger.info("server list is changed{}", JsonTool.toJsonString(watchResponse));
-                    delayEventPublisher.publishEventWithDelay(new ResourceChangeEvent(ResourceChangeTypeEnum.Server_List_Change, ResourceChangeTypeEnum.Server_List_Change), TimeUtils.addTimeStamp(protocolProperties.getRebalanceDelay(), TimeUnit.MILLISECONDS));
-
-//                    delayEventPublisher.publishEvent(new ResourceChangeEvent(ResourceChangeTypeEnum.Server_List_Change, ResourceChangeTypeEnum.Server_List_Change));
+                    monitorCallback.callback(ResourceChangeTypeEnum.Server_List_Change);
                 })
         );
-
-//        client.getWatchClient().watch(
-//                ByteSequence.from(ProtocolConstant.ASSIGNED_SLOT_PATH, Charset.forName("utf-8")),
-//                WatchOption.newBuilder().withPrefix(ByteSequence.from(ProtocolConstant.ASSIGNED_SLOT_PATH, Charset.forName("utf-8"))).build(),
-//                (watchResponse -> {
-//                    // todo 更新resource info 记录
-//                })
-//        );
-
-
+        
         return true;
     }
 

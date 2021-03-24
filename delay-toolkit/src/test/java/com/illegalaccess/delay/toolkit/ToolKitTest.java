@@ -1,10 +1,15 @@
 package com.illegalaccess.delay.toolkit;
 
+import com.google.common.base.Stopwatch;
+import com.illegalaccess.delay.toolkit.http.HttpUtils;
 import com.illegalaccess.delay.toolkit.json.JsonTool;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,6 +18,26 @@ import java.util.concurrent.TimeUnit;
 
 
 public class ToolKitTest {
+
+    @Test
+    public void httpTest() {
+        String url = "http://127.0.0.1:8880/web/demo/post";
+        String url2 = "http://127.0.0.1:8880/web/demo/postP";
+
+        Stopwatch stopwatch = Stopwatch.createUnstarted();
+        stopwatch.start();
+        String resp1 = HttpUtils.httpPost(url, null, null);
+        stopwatch.stop();
+        System.out.println("resp1====" + resp1 + ", cost===" + stopwatch.toString());
+
+        Map<String, String> data = new HashMap<>(2);
+        data.put("name", "jimmy");
+        data.put("dept", "超级公司");
+        stopwatch.start();
+        String resp2 = HttpUtils.httpPost(url2, data, null);
+        stopwatch.stop();
+        System.out.println("resp2====" + resp2 + ", cost===" + stopwatch.toString());
+    }
 
     @Test
     public void timeTest() {
@@ -29,6 +54,9 @@ public class ToolKitTest {
 
         long n3 = 1615202708035L;
         System.out.println(TimeUtils.toLocalDateTime(n3));
+
+        System.out.println(TimeUtils.toLocalDateTime(1616380100527L));
+
     }
 
     @Test
@@ -37,6 +65,12 @@ public class ToolKitTest {
         System.out.println(UUID.randomUUID().toString().replace("-", ""));
         String cnt = "12345";
         System.out.println(JsonTool.parseObject(cnt, Long.class));
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime acc = now.minusMinutes(1);
+        Duration duration = Duration.between(acc, now);
+        System.out.println(duration.toMillis());
+
     }
 
     @Test

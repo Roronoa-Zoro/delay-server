@@ -4,6 +4,7 @@ import com.illegalaccess.delay.client.dto.CancelMessageReq;
 import com.illegalaccess.delay.client.dto.CancelMessageResp;
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.client.dto.DelayMessageResp;
+import com.illegalaccess.delay.toolkit.dto.*;
 /**
  * delay message api
  * @date 2021-03-04 10:16
@@ -17,7 +18,7 @@ public interface DelayMessageApi {
      * @param req
      * @return
      */
-    DelayMessageResp sendDelayMsg(DelayMessageReq req);
+    BaseResponse<DelayMessageResp> sendDelayMsg(DelayMessageReq req);
 
     /**
      * cancel sent delay message
@@ -25,5 +26,5 @@ public interface DelayMessageApi {
      * @param req
      * @return
      */
-    CancelMessageResp cancelDelayMsg(CancelMessageReq req);
+    BaseResponse<CancelMessageResp> cancelDelayMsg(CancelMessageReq req);
 }

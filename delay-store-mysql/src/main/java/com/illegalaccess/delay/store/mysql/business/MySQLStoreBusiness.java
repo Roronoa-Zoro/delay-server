@@ -123,6 +123,16 @@ public class MySQLStoreBusiness {
         return null;
     }
 
+    public Integer queryMessageSlot(String messageId, String appKey, String topic) {
+
+        DelayMessage delayMessage = delayMessageService.lambdaQuery().select(DelayMessage::getSlot)
+                .eq(DelayMessage::getMsgId, messageId)
+                .eq(DelayMessage::getAppKey, appKey)
+                .eq(DelayMessage::getTopic, topic)
+                .eq(DelayMessage::getStatus, DelayMessageStatusEnum.Valid.getStatus())
+                .one();
+        return delayMessage.getSlot();
+    }
 
     public List<AppKeyMessageCntDto> queryMessageCount4AppKey(List<String> appKeyList) {
         return null;
