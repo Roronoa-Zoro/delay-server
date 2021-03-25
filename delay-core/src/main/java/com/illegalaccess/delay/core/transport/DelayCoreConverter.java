@@ -2,16 +2,14 @@ package com.illegalaccess.delay.core.transport;
 
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.core.delay.DelayMessageObj;
-import com.illegalaccess.delay.store.dto.DelayMessageAppDto;
-import com.illegalaccess.delay.store.dto.DelayMessageDto;
-import com.illegalaccess.delay.store.dto.DelayMessageTopicDto;
-import com.illegalaccess.delay.store.dto.QueryAppTopicStatStoreReq;
+import com.illegalaccess.delay.store.dto.*;
 import com.illegalaccess.delay.store.entity.DelayMessageApp;
 import com.illegalaccess.delay.store.entity.DelayMessageTopic;
 import com.illegalaccess.delay.ui.client.dto.app.QueryAppKeyInfo;
 import com.illegalaccess.delay.ui.client.dto.app.QueryAppTopicStatReq;
 import com.illegalaccess.delay.ui.client.dto.app.SaveAppKeyReq;
 import com.illegalaccess.delay.ui.client.dto.app.SaveAppKeyResp;
+import com.illegalaccess.delay.ui.client.dto.system.QueryServerLoadReq;
 import com.illegalaccess.delay.ui.client.dto.topic.QueryTopicInfo;
 import com.illegalaccess.delay.ui.client.dto.topic.SaveTopicReq;
 import org.mapstruct.Mapper;
@@ -70,4 +68,6 @@ public interface DelayCoreConverter {
     List<QueryAppKeyInfo> toQueryAppKeyRespList(List<DelayMessageAppDto> dto);
 
     QueryAppTopicStatStoreReq toQueryAppTopicStatStoreReq(QueryAppTopicStatReq req);
+
+    QueryDelayMessageSnapshotReq toQueryDelayMessageSnapshotReq(QueryServerLoadReq req);
 }

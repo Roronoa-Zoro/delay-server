@@ -7,7 +7,9 @@ import com.illegalaccess.delay.store.StoreApi;
 import com.illegalaccess.delay.store.dto.DelayMessageAppDto;
 import com.illegalaccess.delay.store.dto.DelayMessageTopicDto;
 import com.illegalaccess.delay.store.dto.QueryAppTopicStatStoreReq;
+import com.illegalaccess.delay.store.dto.QueryDelayMessageSnapshotReq;
 import com.illegalaccess.delay.store.entity.DelayMessageApp;
+import com.illegalaccess.delay.store.entity.DelayMessageSnapshot;
 import com.illegalaccess.delay.store.entity.DelayMessageStat;
 import com.illegalaccess.delay.store.entity.DelayMessageTopic;
 import com.illegalaccess.delay.toolkit.IdGenerator;
@@ -177,9 +179,43 @@ public class DelayUIBusiness {
         TrendInfo ti = TrendInfo.builder().xContent(new ArrayList<>(timeSet)).data(data).build();
         return BaseResponse.success(QueryAppTopicStatResp.builder().appKey(req.getAppKey()).trendInfo(ti).build());
     }
-    
-    
+
+    /**
+     * 查询系统负载的快照信息
+     * @param req
+     * @return
+     */
     public BaseResponse<QueryServerLoadResp> queryServerLoad(QueryServerLoadReq req) {
-        return null;
+        QueryDelayMessageSnapshotReq queryDelayMessageSnapshotReq = delayCoreConverter.toQueryDelayMessageSnapshotReq(req);
+        if (queryDelayMessageSnapshotReq.getStart() == null) {
+            queryDelayMessageSnapshotReq.setStart(LocalDateTime.now().minusHours(1L));
+        }
+
+        if (queryDelayMessageSnapshotReq.getEnd() == null) {
+            queryDelayMessageSnapshotReq.setEnd(LocalDateTime.now());
+        }
+
+        List<DelayMessageSnapshot> dbData = storeApi.queryDelayServerLoadSnapshot(queryDelayMessageSnapshotReq);
+        if (CollectionUtils.isEmpty(dbData)) {
+            log.info("does not query ");
+            return BaseResponse.success(QueryServerLoadResp.builder().build());
+        }
+
+        Set<String> timeSet = new LinkedHashSet<>();
+        Map</*IP*/String, List<Integer>> hostLoadMap = new HashMap<>();
+        dbData.forEach(data -> {
+            timeSet.add(TimeUtils.formatLocalDateTime(data.getSnapshotTime()));
+            List<Integer> cnt = hostLoadMap.computeIfAbsent(data.getHostIp(), k -> new ArrayList<>());
+            cnt.add(data.getMessageCnt());
+        });
+
+        List<Pair</*topic*/String, /*数据值*/List<Integer>>> trendData = new ArrayList<>();
+        hostLoadMap.forEach((k,v) -> {
+            Pair<String, List<Integer>> pair = new Pair<>(k,v);
+            trendData.add(pair);
+        });
+        log.info("server load snapshot data is ready");
+        TrendInfo ti = TrendInfo.builder().xContent(new ArrayList<>(timeSet)).data(trendData).build();
+        return BaseResponse.success(QueryServerLoadResp.builder().trendInfo(ti).build());
     }
 }

@@ -51,12 +51,13 @@ delay-message-kafka：kafka作为下游消息系统的实现
 ### 使用方式
 1. clone代码   
 2. 选择使用的接口协议和底层存储   
-3. 安装etcd   
+3. 安装etcd(推荐使用etcd做注册中心和协调层)      
 3.1 分配槽(slot), 往路径/delay/slot/all-slot/写入，如分配4个槽，则格式为1,2,3,4     
+3.2 zk的namespace是delay-server, 写入数据的时候注意这个    
 4. 安装kafka, 创建内部使用的topic：delay_inner_topic    
 5. 安装mysql或者Cassandra   
 6. 安装redis     
-7. 在对应的配置文件里面配置存储的地址和kafka的地址    
+7. 在对应的配置文件里面配置存储中间件的地址和kafka的地址    
 8. 在管理后台分配appkey和topic     
 ```text
 application-cassandra-dubbo.yml，使用Cassandra存储，暴露dubbo协议接口    
@@ -64,8 +65,7 @@ application-cassandra-http.yml，使用Cassandra存储，暴露http协议接口
 application-mysql-dubbo.yml，使用mysql存储，暴露dubbo协议接口    
 application-mysql-dubbo.yml，使用mysql存储，暴露http协议接口    
 application-custom.yml，自定义存储，协议或其他         
-```
-8. 配置appkey和对应的topic, 使用数据表delay_message_app, delay_message_topic    
+```   
 9. 客户端接入   
 9.1 如果使用dubbo协议，调用方引用delay-client模块，配置成dubbo consumer即可   
 9.2 如果使用http协议，调用方可以引用delay-client模块，然后按照业务系统使用的rest工具进行调用     

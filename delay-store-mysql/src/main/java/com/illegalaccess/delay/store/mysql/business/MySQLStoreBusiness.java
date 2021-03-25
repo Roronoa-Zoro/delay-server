@@ -245,4 +245,12 @@ public class MySQLStoreBusiness {
                 .le(DelayMessageStat::getMessageReceivedTime, req.getEnd())
                 .list();
     }
+
+    public List<DelayMessageSnapshot> queryDelayServerLoadSnapshot(QueryDelayMessageSnapshotReq req) {
+
+        return delayMessageSnapshotService.lambdaQuery().in(!CollectionUtils.isEmpty(req.getIpList()), DelayMessageSnapshot::getHostIp, req.getIpList())
+                .ge(DelayMessageSnapshot::getSnapshotTime, req.getStart())
+                .le(DelayMessageSnapshot::getSnapshotTime, req.getEnd())
+                .list();
+    }
 }

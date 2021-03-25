@@ -3,6 +3,7 @@ package com.illegalaccess.delay.store;
 import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.store.dto.*;
 import com.illegalaccess.delay.store.entity.DelayMessageApp;
+import com.illegalaccess.delay.store.entity.DelayMessageSnapshot;
 import com.illegalaccess.delay.store.entity.DelayMessageStat;
 import com.illegalaccess.delay.store.entity.DelayMessageTopic;
 import com.illegalaccess.delay.toolkit.dto.Pair;
@@ -109,6 +110,14 @@ public interface StoreApi {
         return 1;
     }
 
+    /**
+     * 批量保存内存里面消息数量的快照
+     * @return
+     */
+    default int saveDelayMessageSnapshot(List<Pair</*count*/Integer, /*snapshot time*/LocalDateTime>> list, String hostIp) {
+        return 0;
+    }
+
     /**======================================== api for admin ========================================**/
     /**
      1. apply appkey
@@ -162,16 +171,6 @@ public interface StoreApi {
     }
 
     /**
-     * 批量保存内存里面消息数量的快照
-     * @return
-     */
-    default int saveDelayMessageSnapshot(List<Pair</*count*/Integer, /*snapshot time*/LocalDateTime>> list, String hostIp) {
-        return 0;
-    }
-
-
-
-    /**
      * 存储统计信息
      * @param stats
      * @return
@@ -186,6 +185,15 @@ public interface StoreApi {
      * @return
      */
     default List<DelayMessageStat> queryAppTopicCntStat(QueryAppTopicStatStoreReq req) {
+        return null;
+    }
+
+    /**
+     * 查询系统负载
+     * @param req
+     * @return
+     */
+    default List<DelayMessageSnapshot> queryDelayServerLoadSnapshot(QueryDelayMessageSnapshotReq req) {
         return null;
     }
 }

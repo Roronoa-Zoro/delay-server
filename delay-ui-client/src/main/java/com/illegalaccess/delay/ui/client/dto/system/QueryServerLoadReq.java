@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class QueryServerLoadReq implements Serializable {
 
-    private List<String> hostIpList;
+    private List<String> ipList;
 
     private LocalDateTime start;
 

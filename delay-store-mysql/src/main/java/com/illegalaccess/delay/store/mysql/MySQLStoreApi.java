@@ -5,6 +5,7 @@ import com.illegalaccess.delay.client.dto.DelayMessageReq;
 import com.illegalaccess.delay.store.StoreApi;
 import com.illegalaccess.delay.store.dto.*;
 import com.illegalaccess.delay.store.entity.DelayMessageApp;
+import com.illegalaccess.delay.store.entity.DelayMessageSnapshot;
 import com.illegalaccess.delay.store.entity.DelayMessageStat;
 import com.illegalaccess.delay.store.entity.DelayMessageTopic;
 import com.illegalaccess.delay.store.mysql.business.MySQLStoreBusiness;
@@ -142,5 +143,10 @@ public class MySQLStoreApi implements StoreApi {
     @Override
     public List<DelayMessageStat> queryAppTopicCntStat(QueryAppTopicStatStoreReq req) {
         return mySQLStoreBusiness.queryAppTopicCntStat(req);
+    }
+
+    @Override
+    public List<DelayMessageSnapshot> queryDelayServerLoadSnapshot(QueryDelayMessageSnapshotReq req) {
+        return mySQLStoreBusiness.queryDelayServerLoadSnapshot(req);
     }
 }

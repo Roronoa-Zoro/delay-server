@@ -123,7 +123,7 @@ public class EtcdTool {
                     monitorCallback.callback(ResourceChangeTypeEnum.Server_List_Change);
                 })
         );
-        
+
         return true;
     }
 
