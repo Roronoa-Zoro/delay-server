@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+scan：当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒当scan为true时，此属性生效。默认的时间间隔为1分钟。
+debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+packagingData：输出异常栈时也打印出 jar 包的信息
+-->
+<configuration scan="true" scanPeriod="10 seconds"  debug="false" packagingData="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <!-- 定义日志的根目录 -->
+    <springProperty scope="context" name="LOG_HOME" source="log.home"/>
+
+    <!-- 定义日志文件名称 -->
+    <property name="APP_NAME" value="delay-server"/>
+
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%X{PFTID}|%thread|%-5level|%logger{36}|%msg%n"/>
+
+
+    <!--    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+    <!--            <level>DEBUG</level>-->
+    <!--        </filter>-->
+    <!--        <File>${LOG_HOME}/debug.log</File>-->
+    <!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+    <!--            <fileNamePattern>${LOG_HOME}/debug-%d{yyyyMMdd}.log.%i</fileNamePattern>-->
+    <!--            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
+    <!--                <maxFileSize>1GB</maxFileSize>-->
+    <!--            </timeBasedFileNamingAndTriggeringPolicy>-->
+    <!--            <maxHistory>1</maxHistory>-->
+    <!--            <totalSizeCap>6GB</totalSizeCap>-->
+    <!--            <cleanHistoryOnStart>true</cleanHistoryOnStart>-->
+    <!--        </rollingPolicy>-->
+    <!--        <layout class="ch.qos.logback.classic.PatternLayout">-->
+    <!--            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%msg%n</Pattern>-->
+    <!--        </layout>-->
+    <!--    </appender>-->
+
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <File>${LOG_HOME}/info.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/info-%d{yyyyMMdd}.log.%i</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1GB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${LOG_PATTERN}</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <File>${LOG_HOME}/warn.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/warn-%d{yyyyMMdd}.log.%i</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1GB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${LOG_PATTERN}</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <File>${LOG_HOME}/error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/error-%d{yyyyMMdd}.log.%i</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1GB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${LOG_PATTERN}</Pattern>
+        </layout>
+    </appender>
+
+    <!-- 异步输出，异步的log片段必须在同步段后面，否则不起作用 -->
+    <!--    <appender name="DEBUG_FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">-->
+    <!--        <discardingThreshold>0</discardingThreshold>-->
+    <!--        <queueSize>10000</queueSize>-->
+    <!--        <appender-ref ref="DEBUG_FILE"/>-->
+    <!--    </appender>-->
+    <appender name="INFO_FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>10000</queueSize>
+        <appender-ref ref="INFO_FILE"/>
+    </appender>
+    <appender name="WARN_FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="WARN_FILE"/>
+    </appender>
+    <appender name="ERROR_FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="ERROR_FILE"/>
+    </appender>
+
+    <logger name="com.jd.jim" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="WARN_FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </logger>
+
+    <logger name="com.jd.jsf" additivity="false">
+        <level value="WARN" />
+        <appender-ref ref="WARN_FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </logger>
+
+    <!-- INFO DEBUG    -->
+    <root level="INFO">
+        <springProfile name="dev-mysql-dubbo">
+            <!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+        <!--        <appender-ref ref="DEBUG_FILE_ASYNC" />-->
+        <appender-ref ref="INFO_FILE_ASYNC" />
+        <appender-ref ref="WARN_FILE_ASYNC" />
+        <appender-ref ref="ERROR_FILE_ASYNC" />
+    </root>
+
+</configuration>
