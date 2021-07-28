@@ -59,14 +59,22 @@ public class LoadDelayMessageThreadPoolTask extends AbstractLogRunnable {
             }
 
             LocalDateTime last = putDelayMessageToMemory(list, delayCoreConverter);
-            DelayMessageSupport.LastUnProcessedExecTime.set(last);
-
+            setLastUnProcessedTime(last);
 
             log.info("load delay message for server start up, between {} and {}", startTime, future5Min);
             return;
         }
 
         // running logic
+        /*
+           维护一个时间窗口
+           last     next
+           |         |
+           ___________
+           1。每次向后查找时，范围是next - next+60s
+           2。每次向前查找时，从last到当前时间范围，如果每次没有失败的记录，则每次向前查找的就是刚过去的一分钟内de数据
+           向前查找是为了避免之前的数据处理失败，这样可以进行重试
+         */
         LocalDateTime lastFutureTime = DelayMessageSupport.NextUnProcessedExecTime.get();
         LocalDateTime nextFutureTime = lastFutureTime.plusSeconds(60);
         List<DelayMessageDto> list = storeApi.queryExpiringDelayMessage(lastFutureTime, nextFutureTime, Ints.asList(ResourceInfo.getAssignedSlot()));
@@ -85,7 +93,16 @@ public class LoadDelayMessageThreadPoolTask extends AbstractLogRunnable {
         }
 
         LocalDateTime last = putDelayMessageToMemory(list, delayCoreConverter);
-        DelayMessageSupport.LastUnProcessedExecTime.set(last);
+        setLastUnProcessedTime(last);
+    }
+
+    /**
+     * 设置向前查找的最大时间，最长向前推10分钟，因为随着一次一次的重复执行，每条失败的记录会被重复执行10次
+     * @param lastRecordTime
+     */
+    private void setLastUnProcessedTime(LocalDateTime lastRecordTime) {
+        LocalDateTime tenMinAgo = LocalDateTime.now().plusMinutes(10);
+        DelayMessageSupport.LastUnProcessedExecTime.set(lastRecordTime.isAfter(tenMinAgo) ? lastRecordTime : tenMinAgo);
     }
 
     /**

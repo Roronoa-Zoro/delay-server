@@ -7,7 +7,6 @@ import com.illegalaccess.delay.core.scheduler.LoadDelayMessageThreadPoolTask;
 import com.illegalaccess.delay.core.scheduler.LoopDelayMessageThreadPoolTask;
 import com.illegalaccess.delay.message.DelayMqApi;
 import com.illegalaccess.delay.protocol.ResourceProtocol;
-import com.illegalaccess.delay.protocol.callback.ResourceChangeCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -50,7 +49,7 @@ public class ApplicationStartedEventListener implements ApplicationListener<Appl
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent applicationStartedEvent) {
-        resourceProtocol.monitorResource(new ResourceChangeCallback());
+        resourceProtocol.monitorResource();
         log.info("protocol is monitored");
 
         resourceProtocol.register();
@@ -59,6 +58,7 @@ public class ApplicationStartedEventListener implements ApplicationListener<Appl
         loopThread.scheduleAtFixedRate(new LoopDelayMessageThreadPoolTask(workingThread, delayMqApi, delayEventPublisher), 3, 1, TimeUnit.SECONDS);
         log.info("scheduled loop delay message task");
 
+        // 定期加载数据的任务，每隔1分钟
         loopThread.scheduleAtFixedRate(new LoadDelayMessageThreadPoolTask(delayCoreProperties), 0, 1, TimeUnit.MINUTES);
         log.info("scheduled load delay message task");
 

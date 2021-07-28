@@ -15,6 +15,7 @@ import java.util.Enumeration;
 public class IPUtils {
 
     private static final Logger log = LoggerFactory.getLogger(IPUtils.class);
+    private static final String IP = "IP";
 
     public static String getLocalIpByNetcard() {
         try {
@@ -39,6 +40,11 @@ public class IPUtils {
 
     public static String getHostIp() {
         try {
+            // 测试阶段使用，优先取-DIP=xxx的参数
+            String testIp = System.getProperty(IP);
+            if (testIp != null && !"".equals(testIp)) {
+                return testIp;
+            }
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
             while (allNetInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();

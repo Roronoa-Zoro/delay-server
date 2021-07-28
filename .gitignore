@@ -114,4 +114,5 @@ local.properties
 hs_err_pid*
 #dev profile
 
-
+.DS_Store
+**/.DS_Store

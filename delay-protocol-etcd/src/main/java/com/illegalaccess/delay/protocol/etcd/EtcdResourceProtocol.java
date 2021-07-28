@@ -3,7 +3,6 @@ package com.illegalaccess.delay.protocol.etcd;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.illegalaccess.delay.protocol.*;
-import com.illegalaccess.delay.protocol.callback.MonitorCallback;
 import com.illegalaccess.delay.protocol.constant.ProtocolConstant;
 import com.illegalaccess.delay.protocol.etcd.support.EtcdTool;
 import com.illegalaccess.delay.protocol.support.HostInfo;
@@ -47,8 +46,8 @@ public class EtcdResourceProtocol extends AbstractResourceProtocol {
     }
 
     @Override
-    public void monitorResource(MonitorCallback monitorCallback) {
-        etcdTool.monitor(monitorCallback);
+    public void monitorResource() {
+        etcdTool.monitor(super.callback);
     }
 
     @Override

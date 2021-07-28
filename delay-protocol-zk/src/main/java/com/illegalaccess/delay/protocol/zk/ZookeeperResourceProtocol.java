@@ -2,7 +2,6 @@ package com.illegalaccess.delay.protocol.zk;
 
 import com.google.common.base.Joiner;
 import com.illegalaccess.delay.protocol.AbstractResourceProtocol;
-import com.illegalaccess.delay.protocol.callback.MonitorCallback;
 import com.illegalaccess.delay.protocol.constant.ProtocolConstant;
 import com.illegalaccess.delay.protocol.enums.RegisterStatusEnum;
 import com.illegalaccess.delay.protocol.enums.ResourceChangeTypeEnum;
@@ -95,7 +94,7 @@ public class ZookeeperResourceProtocol extends AbstractResourceProtocol {
     }
 
     @Override
-    public void monitorResource(MonitorCallback monitorCallback) {
+    public void monitorResource() {
         NodeCache nodeCache = new NodeCache(curatorFramework, ProtocolConstant.ALL_SLOT_PATH);
         //调用start方法开始监听
         try {
@@ -103,7 +102,7 @@ public class ZookeeperResourceProtocol extends AbstractResourceProtocol {
             //添加NodeCacheListener监听器
             nodeCache.getListenable().addListener(() -> {
                 log.info("槽变更监听到事件变化，当前数据:{}", new String(nodeCache.getCurrentData().getData()));
-                monitorCallback.callback(ResourceChangeTypeEnum.Slot_Change);
+                super.callback.callback(ResourceChangeTypeEnum.Slot_Change);
             });
 
             log.info("slot path is monitored");
@@ -113,7 +112,7 @@ public class ZookeeperResourceProtocol extends AbstractResourceProtocol {
             //添加监听器
             pathChildrenCache.getListenable().addListener((client, event) -> {
                 log.info("所有server节点数据变化,类型:{},路径:{}", event.getType(), event.getData().getPath());
-                monitorCallback.callback(ResourceChangeTypeEnum.Server_List_Change);
+                super.callback.callback(ResourceChangeTypeEnum.Server_List_Change);
             });
             log.info("server list path is monitored");
         } catch (Exception e) {

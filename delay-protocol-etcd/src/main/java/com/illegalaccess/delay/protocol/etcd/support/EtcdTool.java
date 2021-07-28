@@ -46,6 +46,7 @@ public class EtcdTool {
     private Client client;
     @Autowired
     private ProtocolProperties protocolProperties;
+    private MonitorCallback monitorCallback;
 
     /**
      * 注册本机IP，创建租约
@@ -60,18 +61,25 @@ public class EtcdTool {
         GetResponse getResp = getQuietly(() -> client.getKVClient().get(toByteSequence(hostKey)).get());
         if (getResp.getCount() > 0) {
             logger.info("hostIp:{} is registered", hostIp);
-            return true;
         }
 
         /**
          * todo
          * 这里需要保存lease id到redis，当服务异常挂掉，被操作系统再次拉起后，如果时间很短，则可以保存lease id不变，不必重新触发 rebalance
-         *
+         * 如果挂了，然后被OS快速拉起，此时leaseId未过期，虽然可以继续续期之前的lease，但是这台机器的槽怎么获取回来？？？？
+         * answer：
+         * 方案1：把槽信息和leaseId一起写入磁盘，如果服务恢复后leaseId没有过期，则触发一个recover的操作，把槽信息分配到本机，开始提供服务
+         * 方案2：如果服务恢复后leaseId没有过期，则触发一个recover的操作，从远程服务获取所有槽和机器，执行rebalance算法，得到本机的槽信息，分配到本机，开始提供服务
+         * 结论：使用方案2，数据的准确性更高
          */
         Long leaseId = EtcdLeaseTool.getLeaseExpireTime(protocolProperties.getLeasePath());
         long ttl = renew(leaseId);
         if (ttl > 0) {
+            logger.info("old lease is not expire, keep use it");
             EtcdResourceInfo.updateLease(leaseId);
+
+            // 触发一个recover事件
+            monitorCallback.callback(ResourceChangeTypeEnum.Server_List_Change);
             return true;
         }
 
@@ -84,7 +92,7 @@ public class EtcdTool {
         );
 
         PutResponse putResponse = getQuietly(() -> putFuture.get());
-        logger.info("put current machine:{} successfully", hostKey);
+        logger.info("put current machine:{} successfully:{}", hostKey, putResponse);
         return true;
     }
 
@@ -104,6 +112,9 @@ public class EtcdTool {
      * @return
      */
     public boolean monitor(MonitorCallback monitorCallback) {
+        if (this.monitorCallback == null) {
+            this.monitorCallback = monitorCallback;
+        }
         client.getWatchClient().watch(
                 ByteSequence.from(ProtocolConstant.ALL_SLOT_PATH, Charset.forName("utf-8")),
 //                WatchOption.newBuilder().withPrefix(ByteSequence.from(ProtocolConstant.ALL_SLOT_PATH, Charset.forName("utf-8"))).build(),

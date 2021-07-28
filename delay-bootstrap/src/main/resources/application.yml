@@ -7,7 +7,7 @@ delay:
     endpoints: http://localhost:2379
     timeout: 3
     leasePath: /Users/jimmy/working/tmp/lease.txt
-    ttl: 15
+    ttl: 45
   core:
     withinMin: 5
   store:

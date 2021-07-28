@@ -1,8 +1,8 @@
 package com.illegalaccess.delay.protocol;
 
-import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
-import com.illegalaccess.delay.protocol.constant.ProtocolConstant;
+import com.illegalaccess.delay.protocol.callback.MonitorCallback;
+import com.illegalaccess.delay.protocol.callback.ResourceChangeCallback;
 import com.illegalaccess.delay.protocol.rebalance.RoundRobinSlotRebalance;
 import com.illegalaccess.delay.protocol.rebalance.SlotRebalance;
 import com.illegalaccess.delay.protocol.support.HostInfo;
@@ -14,10 +14,13 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
+
 @Slf4j
 public abstract class AbstractResourceProtocol implements ResourceProtocol {
 
     private SlotRebalance slotRebalance = new RoundRobinSlotRebalance();
+
+    protected MonitorCallback callback = new ResourceChangeCallback();
 
     @Value("${server.port}")
     private int webPort;

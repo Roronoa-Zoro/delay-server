@@ -31,7 +31,7 @@ public interface ResourceProtocol {
      * 资源发生变更时，调用callback方法
      *
      */
-    void monitorResource(MonitorCallback monitorCallback);
+    void monitorResource();
 
     /**
      * 数据重平衡
